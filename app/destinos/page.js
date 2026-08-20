@@ -6,8 +6,10 @@ import { destinos, categorias } from '../../data/destinos';
 import DestinationCard from '../../components/DestinationCard';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import useScrollReveal from '../../hooks/useScrollReveal';
 
 function DestinosContent() {
+  useScrollReveal();
   const params = useSearchParams();
   const [catActiva, setCatActiva] = useState(params.get('cat') || 'todos');
   const [busqueda, setBusqueda] = useState('');
@@ -37,9 +39,9 @@ function DestinosContent() {
       <main style={{ paddingTop: 'var(--navbar-h)' }}>
         <div className="page-hero">
           <div className="container page-hero-content">
-            <div className="badge">Nuestros Destinos</div>
-            <h1>Encuentra tu <span style={{color: 'var(--primary)'}}>destino ideal</span></h1>
-            <p>Explora nuestra colección de paquetes de viaje cuidadosamente seleccionados.</p>
+            <div className="badge animate-fade-up">Nuestros Destinos</div>
+            <h1 className="animate-fade-up-delay-1">Encuentra tu <span style={{color: 'var(--primary)'}}>destino ideal</span></h1>
+            <p className="animate-fade-up-delay-2">Explora nuestra colección de paquetes de viaje cuidadosamente seleccionados.</p>
           </div>
         </div>
 
@@ -47,7 +49,6 @@ function DestinosContent() {
           <div className="container">
             <div className="destinos-filters">
               <div className="destinos-search">
-                <span className="destinos-search__icon">🔍</span>
                 <input
                   type="text"
                   placeholder="Buscar destino o país..."
@@ -84,7 +85,7 @@ function DestinosContent() {
           </div>
         </div>
 
-        <section className="section" style={{ paddingTop: '40px' }}>
+        <section className="section" style={{ paddingTop: '40px' }} data-reveal>
           <div className="container">
             <p className="destinos-count">
               {filtrados.length === 0
@@ -97,7 +98,6 @@ function DestinosContent() {
               </div>
             ) : (
               <div className="destinos-empty">
-                <span>🌍</span>
                 <h3>No encontramos resultados</h3>
                 <p>Prueba con otro término de búsqueda o categoría.</p>
                 <button className="btn btn-primary" onClick={() => { setBusqueda(''); setCatActiva('todos'); }}>

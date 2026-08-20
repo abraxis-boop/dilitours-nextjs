@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import useScrollReveal from '../../hooks/useScrollReveal';
 
 const fotos = [
   { id: 1, src: '/hero_banner.jpg', titulo: 'Playa Tropical Paradisíaca', lugar: 'Caribe' },
@@ -17,6 +19,7 @@ const fotos = [
 ];
 
 export default function GaleriaPage() {
+  useScrollReveal();
   const [lightbox, setLightbox] = useState(null);
 
   const prev = () => setLightbox(i => (i === 0 ? fotos.length - 1 : i - 1));
@@ -34,13 +37,13 @@ export default function GaleriaPage() {
       <main style={{ paddingTop: 'var(--navbar-h)' }}>
         <div className="page-hero">
           <div className="container page-hero-content">
-            <div className="badge">Galería</div>
-            <h1>Momentos <span style={{ color: 'var(--primary)' }}>Inolvidables</span></h1>
-            <p>Inspírate con las fotos de los destinos y experiencias que Dilitours tiene para ti.</p>
+            <div className="badge animate-fade-up">Galería</div>
+            <h1 className="animate-fade-up-delay-1">Momentos <span style={{ color: 'var(--primary)' }}>Inolvidables</span></h1>
+            <p className="animate-fade-up-delay-2">Inspírate con las fotos de los destinos y experiencias que Dilitours tiene para ti.</p>
           </div>
         </div>
 
-        <section className="section">
+        <section className="section" data-reveal>
           <div className="container">
             <div className="galeria-grid">
               {fotos.map((foto, idx) => (
@@ -54,12 +57,11 @@ export default function GaleriaPage() {
                   onKeyDown={e => e.key === 'Enter' && setLightbox(idx)}
                   aria-label={`Ver ${foto.titulo}`}
                 >
-                  <img src={foto.src} alt={foto.titulo} loading="lazy" />
+                  <Image src={foto.src} alt={foto.titulo} width={600} height={400} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                   <div className="galeria-item__overlay">
                     <div className="galeria-item__info">
-                      <span className="galeria-item__zoom">🔍</span>
                       <h4>{foto.titulo}</h4>
-                      <p>📍 {foto.lugar}</p>
+                      <p>{foto.lugar}</p>
                     </div>
                   </div>
                 </div>
@@ -80,10 +82,10 @@ export default function GaleriaPage() {
             <button className="galeria-lightbox__close" onClick={() => setLightbox(null)} id="lightbox-close">✕</button>
             <button className="galeria-lightbox__nav galeria-lightbox__nav--prev" onClick={prev} id="lightbox-prev">‹</button>
             <div className="galeria-lightbox__box">
-              <img src={fotos[lightbox].src} alt={fotos[lightbox].titulo} className="galeria-lightbox__img" />
+              <Image src={fotos[lightbox].src} alt={fotos[lightbox].titulo} width={900} height={600} className="galeria-lightbox__img" />
               <div className="galeria-lightbox__caption">
                 <h3>{fotos[lightbox].titulo}</h3>
-                <p>📍 {fotos[lightbox].lugar}</p>
+                <p>{fotos[lightbox].lugar}</p>
               </div>
             </div>
             <button className="galeria-lightbox__nav galeria-lightbox__nav--next" onClick={next} id="lightbox-next">›</button>

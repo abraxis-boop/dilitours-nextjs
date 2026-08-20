@@ -3,9 +3,12 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { destinos } from '../../../data/destinos';
+import { agency } from '../../../data/agency';
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
+import useScrollReveal from '../../../hooks/useScrollReveal';
 
 const categoryLabels = {
   'nacional': 'Nacional', 'internacional': 'Internacional', 'luna-de-miel': 'Luna de Miel',
@@ -13,6 +16,7 @@ const categoryLabels = {
 };
 
 export default function DetalleDestinoPage() {
+  useScrollReveal();
   const params = useParams();
   const id = params.id;
   const destino = destinos.find(d => d.id === parseInt(id));
@@ -34,6 +38,10 @@ export default function DetalleDestinoPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    window.open(
+      `${agency.social.whatsapp}?text=${encodeURIComponent(`Hola! Me interesa el paquete "${destino.nombre}" (${destino.duracion}). Quiero viajar con ${form.personas} persona(s). ${form.comentarios}`)}`,
+      '_blank'
+    );
     setEnviado(true);
   };
 
@@ -42,27 +50,27 @@ export default function DetalleDestinoPage() {
       <Navbar />
       <main style={{ paddingTop: 'var(--navbar-h)' }}>
         <div className="detalle-hero">
-          <img src={destino.imagen} alt={destino.nombre} className="detalle-hero__img" />
+          <Image src={destino.imagen} alt={destino.nombre} fill priority className="detalle-hero__img" sizes="100vw" quality={80} />
           <div className="detalle-hero__overlay" />
           <div className="container detalle-hero__content">
-            <nav className="breadcrumb" style={{ justifyContent: 'flex-start' }}>
+            <nav className="breadcrumb animate-fade-up" style={{ justifyContent: 'flex-start' }}>
               <Link href="/">Inicio</Link><span>›</span>
               <Link href="/destinos">Destinos</Link><span>›</span>
               <span style={{ color: 'white' }}>{destino.nombre}</span>
             </nav>
-            <span className={`badge-category badge-${destino.categoria}`} style={{marginBottom: '12px', display: 'inline-block'}}>
+            <span className={`badge-category badge-${destino.categoria} animate-fade-up-delay-1`} style={{marginBottom: '12px', display: 'inline-block'}}>
               {categoryLabels[destino.categoria]}
             </span>
-            <h1>{destino.nombre}</h1>
-            <div className="detalle-hero__meta">
-              <span>📍 {destino.pais}</span>
-              <span>🕐 {destino.duracion}</span>
-              <span>⭐ {destino.rating} ({destino.reviews} reseñas)</span>
+            <h1 className="animate-fade-up-delay-2">{destino.nombre}</h1>
+            <div className="detalle-hero__meta animate-fade-up-delay-3">
+              <span>{destino.pais}</span>
+              <span>{destino.duracion}</span>
+              <span>{destino.rating} ({destino.reviews} reseñas)</span>
             </div>
           </div>
         </div>
 
-        <section className="section" style={{ paddingTop: '48px' }}>
+        <section className="section" style={{ paddingTop: '48px' }} data-reveal>
           <div className="container">
             <div className="detalle-layout">
               <div className="detalle-main">
@@ -108,12 +116,12 @@ export default function DetalleDestinoPage() {
                       </div>
                       <span className="detalle-price-card__pp">por persona</span>
                     </div>
-                    {destino.destacado && <span className="detalle-price-card__badge">⭐ Destacado</span>}
+                    {destino.destacado && <span className="detalle-price-card__badge">Destacado</span>}
                   </div>
                   <div className="detalle-price-card__info">
-                    <div><span>📅</span>{destino.duracion}</div>
-                    <div><span>📍</span>{destino.pais}</div>
-                    <div><span>✅</span>{destino.incluye.length} servicios incluidos</div>
+                    <div><span></span>{destino.duracion}</div>
+                    <div><span></span>{destino.pais}</div>
+                    <div><span></span>{destino.incluye.length} servicios incluidos</div>
                   </div>
                 </div>
 
@@ -122,9 +130,9 @@ export default function DetalleDestinoPage() {
                   <p>Completa tus datos y te contactamos en menos de 24 horas.</p>
                   {enviado ? (
                     <div className="detalle-form-success">
-                      <span>🎉</span>
+                      <span>✓</span>
                       <h4>¡Solicitud enviada!</h4>
-                      <p>Nos pondremos en contacto contigo muy pronto.</p>
+                      <p>Te contactaremos pronto por WhatsApp.</p>
                     </div>
                   ) : (
                     <form onSubmit={handleSubmit} className="detalle-form">
@@ -161,7 +169,7 @@ export default function DetalleDestinoPage() {
                           value={form.comentarios} onChange={e => setForm({...form, comentarios: e.target.value})} id="detalle-comentarios" />
                       </div>
                       <button type="submit" className="btn btn-primary" style={{width: '100%', justifyContent: 'center'}}>
-                        ✈ Reservar ahora
+                        Reservar ahora
                       </button>
                     </form>
                   )}

@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 import { destinos, categorias } from '../../data/destinos';
+import { agency } from '../../data/agency';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import useScrollReveal from '../../hooks/useScrollReveal';
 
 const pasos = ['Destino', 'Fechas & Grupo', 'Tus datos', 'Confirmar'];
 
 export default function CotizacionPage() {
+  useScrollReveal();
   const [paso, setPaso] = useState(0);
   const [enviado, setEnviado] = useState(false);
   const [form, setForm] = useState({
@@ -22,6 +25,9 @@ export default function CotizacionPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const destinoText = form.destino || form.destino_personalizado || 'Personalizado';
+    const msg = `Hola! Solicito cotización:\n- Destino: ${destinoText}\n- Fechas: ${form.fecha_salida || 'Por definir'} → ${form.fecha_regreso || 'Por definir'}\n- Grupo: ${form.adultos} adultos, ${form.ninos} niños\n- Habitación: ${form.tipo_habitacion}\n- Nombre: ${form.nombre}\n- Email: ${form.email}\n- Tel: ${form.telefono}\n- Ciudad: ${form.ciudad || 'No especificada'}\n- Cómo nos conociste: ${form.como_nos_conocio || 'No especificado'}\n- Comentarios: ${form.comentarios || 'Ninguno'}`;
+    window.open(`${agency.social.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
     setEnviado(true);
   };
 
@@ -33,13 +39,13 @@ export default function CotizacionPage() {
           <section className="section" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center' }}>
             <div className="container" style={{ textAlign: 'center' }}>
               <div className="cotizacion-success">
-                <span>🎉</span>
+                <span style={{ fontSize: '48px' }}>✓</span>
                 <h2>¡Solicitud enviada con éxito!</h2>
                 <p>Gracias, <strong>{form.nombre}</strong>. Hemos recibido tu solicitud de cotización para <strong>{form.destino || 'tu destino seleccionado'}</strong>.</p>
-                <p style={{ marginTop: '8px' }}>Nuestro equipo se pondrá en contacto contigo en menos de <strong>24 horas</strong> al correo <strong>{form.email}</strong>.</p>
+                <p style={{ marginTop: '8px' }}>Te enviaremos tu cotización por WhatsApp en menos de 24 horas.</p>
                 <div style={{ marginTop: '32px', display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <a href="/" className="btn btn-primary btn-lg">Ir al inicio</a>
-                  <a href="/destinos" className="btn btn-outline-dark btn-lg">Explorar más destinos</a>
+                  <a href={`${agency.social.whatsapp}?text=${encodeURIComponent(`Hola! Solicito cotización para ${form.destino || form.destino_personalizado || 'Personalizado'}`)}`} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg">Enviar por WhatsApp</a>
+                  <a href="/" className="btn btn-outline-dark btn-lg">Ir al inicio</a>
                 </div>
               </div>
             </div>
@@ -56,13 +62,13 @@ export default function CotizacionPage() {
       <main style={{ paddingTop: 'var(--navbar-h)' }}>
         <div className="page-hero page-hero--sm">
           <div className="container page-hero-content">
-            <div className="badge">Cotización Gratuita</div>
-            <h1>Cotiza tu <span style={{ color: 'var(--primary)' }}>viaje ideal</span></h1>
-            <p>Sin costo, sin compromiso. Te respondemos en menos de 24 horas.</p>
+            <div className="badge animate-fade-up">Cotización Gratuita</div>
+            <h1 className="animate-fade-up-delay-1">Cotiza tu <span style={{ color: 'var(--primary)' }}>viaje ideal</span></h1>
+            <p className="animate-fade-up-delay-2">Sin costo, sin compromiso. Te respondemos en menos de 24 horas.</p>
           </div>
         </div>
 
-        <section className="section" style={{ paddingTop: '40px', background: 'var(--light-bg)' }}>
+        <section className="section" style={{ paddingTop: '40px', background: 'var(--light-bg)' }} data-reveal>
           <div className="container">
             <div className="cotizacion-progress">
               {pasos.map((p, i) => (
@@ -208,33 +214,33 @@ export default function CotizacionPage() {
                 {paso === 3 && (
                   <div className="cotizacion-form-step animate-fade-up">
                     <h3>Confirmar solicitud</h3>
-                    <div className="cotizacion-summary">
+                      <div className="cotizacion-summary">
                       <div className="cotizacion-summary__item">
-                        <span>🌍 Destino</span>
+                        <span>Destino</span>
                         <strong>{form.destino || form.destino_personalizado}</strong>
                       </div>
                       <div className="cotizacion-summary__item">
-                        <span>📅 Fechas</span>
+                        <span>Fechas</span>
                         <strong>{form.fecha_salida || '—'} → {form.fecha_regreso || '—'}</strong>
                       </div>
                       <div className="cotizacion-summary__item">
-                        <span>👥 Viajeros</span>
+                        <span>Viajeros</span>
                         <strong>{form.adultos} adultos, {form.ninos} niños</strong>
                       </div>
                       <div className="cotizacion-summary__item">
-                        <span>🛏️ Habitación</span>
+                        <span>Habitación</span>
                         <strong>{form.tipo_habitacion}</strong>
                       </div>
                       <div className="cotizacion-summary__item">
-                        <span>👤 Nombre</span>
+                        <span>Nombre</span>
                         <strong>{form.nombre}</strong>
                       </div>
                       <div className="cotizacion-summary__item">
-                        <span>📧 Email</span>
+                        <span>Email</span>
                         <strong>{form.email}</strong>
                       </div>
                       <div className="cotizacion-summary__item">
-                        <span>📞 Teléfono</span>
+                        <span>Teléfono</span>
                         <strong>{form.telefono}</strong>
                       </div>
                     </div>
@@ -243,7 +249,7 @@ export default function CotizacionPage() {
                     </p>
                     <div className="cotizacion-nav">
                       <button type="button" className="btn btn-outline-dark" onClick={() => setPaso(2)}>← Atrás</button>
-                      <button type="submit" className="btn btn-primary btn-lg">✈ Enviar solicitud</button>
+                      <button type="submit" className="btn btn-primary btn-lg">Enviar solicitud</button>
                     </div>
                   </div>
                 )}

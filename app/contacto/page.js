@@ -3,8 +3,11 @@
 import { useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { agency } from '../../data/agency';
+import useScrollReveal from '../../hooks/useScrollReveal';
 
 export default function ContactoPage() {
+  useScrollReveal();
   const [form, setForm] = useState({ nombre: '', email: '', telefono: '', asunto: '', mensaje: '' });
   const [enviado, setEnviado] = useState(false);
 
@@ -12,6 +15,8 @@ export default function ContactoPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const msg = `Hola! Soy ${form.nombre}. ${form.asunto}: ${form.mensaje}. Mi email es ${form.email} y mi teléfono ${form.telefono || 'no disponible'}.`;
+    window.open(`${agency.social.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
     setEnviado(true);
   };
 
@@ -21,13 +26,13 @@ export default function ContactoPage() {
       <main style={{ paddingTop: 'var(--navbar-h)' }}>
         <div className="page-hero">
           <div className="container page-hero-content">
-            <div className="badge">Contacto</div>
-            <h1>Estamos aquí para <span style={{ color: 'var(--primary)' }}>ayudarte</span></h1>
-            <p>Escríbenos, llámanos o visítanos. Con gusto te atenderemos.</p>
+            <div className="badge animate-fade-up">Contacto</div>
+            <h1 className="animate-fade-up-delay-1">Estamos aquí para <span style={{ color: 'var(--primary)' }}>ayudarte</span></h1>
+            <p className="animate-fade-up-delay-2">Escríbenos, llámanos o visítanos. Con gusto te atenderemos.</p>
           </div>
         </div>
 
-        <section className="section">
+        <section className="section" data-reveal>
           <div className="container">
             <div className="contacto-layout">
               <div className="contacto-info">
@@ -36,34 +41,32 @@ export default function ContactoPage() {
 
                 <div className="contacto-info__items">
                   <div className="contacto-info__item">
-                    <div className="contacto-info__icon">📍</div>
+                    <div className="contacto-info__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
                     <div>
                       <strong>Oficina Principal</strong>
-                      <p>Av. Reforma 123, Col. Centro<br/>Ciudad de México, CDMX 06600</p>
+                      <p>{agency.contact.address}<br/>{agency.contact.city}</p>
                     </div>
                   </div>
                   <div className="contacto-info__item">
-                    <div className="contacto-info__icon">📞</div>
+                    <div className="contacto-info__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
                     <div>
                       <strong>Teléfono</strong>
-                      <p><a href="tel:+525512345678">+52 55 1234 5678</a></p>
-                      <p><a href="tel:+525587654321">+52 55 8765 4321</a> (WhatsApp)</p>
+                      <p><a href={agency.contact.phoneRaw}>{agency.contact.phone}</a></p>
+                      <p><a href={agency.contact.whatsappLink}>{agency.contact.whatsapp}</a> (WhatsApp)</p>
                     </div>
                   </div>
                   <div className="contacto-info__item">
-                    <div className="contacto-info__icon">✉️</div>
+                    <div className="contacto-info__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
                     <div>
                       <strong>Email</strong>
-                      <p><a href="mailto:hola@dilitours.com">hola@dilitours.com</a></p>
-                      <p><a href="mailto:reservas@dilitours.com">reservas@dilitours.com</a></p>
+                      <p><a href={agency.contact.emailMailto}>{agency.contact.email}</a></p>
                     </div>
                   </div>
                   <div className="contacto-info__item">
-                    <div className="contacto-info__icon">🕐</div>
+                    <div className="contacto-info__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                     <div>
                       <strong>Horario de atención</strong>
-                      <p>Lunes – Viernes: 9:00 – 19:00</p>
-                      <p>Sábado: 10:00 – 15:00</p>
+                      <p>{agency.contact.hours}</p>
                     </div>
                   </div>
                 </div>
@@ -71,17 +74,16 @@ export default function ContactoPage() {
                 <div className="contacto-social">
                   <h4>Síguenos en redes</h4>
                   <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
-                    {['📘 Facebook', '📷 Instagram', '🎵 TikTok', '💬 WhatsApp'].map((s, i) => (
-                      <a key={i} href="#" className="contacto-social-btn">{s.split(' ')[0]}</a>
-                    ))}
+                    <a href={agency.social.facebook} target="_blank" rel="noreferrer" className="contacto-social-btn">Facebook</a>
+                    <a href={agency.social.tiktok} target="_blank" rel="noreferrer" className="contacto-social-btn">TikTok</a>
                   </div>
                 </div>
 
                 <div className="contacto-map">
                   <div className="contacto-map__inner">
-                    <span>🗺️</span>
-                    <p>Av. Reforma 123, CDMX</p>
-                    <a href="https://maps.google.com" target="_blank" rel="noreferrer" className="btn btn-outline-dark btn-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="1.5" width="48" height="48"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <p>{agency.contact.address}, {agency.contact.city}</p>
+                    <a href={`https://maps.google.com/?q=${encodeURIComponent(agency.contact.address + ', ' + agency.contact.city)}`} target="_blank" rel="noreferrer" className="btn btn-outline-dark btn-sm">
                       Ver en Google Maps
                     </a>
                   </div>
@@ -93,9 +95,9 @@ export default function ContactoPage() {
                 <p>Te respondemos en menos de 24 horas.</p>
                 {enviado ? (
                   <div className="contacto-success">
-                    <span>🎉</span>
+                    <span style={{ fontSize: '48px' }}>✓</span>
                     <h4>¡Mensaje enviado!</h4>
-                    <p>Gracias por contactarnos. Nuestro equipo te responderá a la brevedad posible.</p>
+                    <p>Te responderemos pronto por WhatsApp.</p>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="contacto-form">
@@ -135,7 +137,7 @@ export default function ContactoPage() {
                         value={form.mensaje} onChange={e => upd('mensaje', e.target.value)} id="contacto-mensaje" />
                     </div>
                     <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-                      📨 Enviar mensaje
+                      Enviar mensaje
                     </button>
                   </form>
                 )}

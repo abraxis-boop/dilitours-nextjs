@@ -29,6 +29,15 @@ export default function Navbar() {
     setMenuOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
   const transparent = isHome && !scrolled;
 
   return (
@@ -61,7 +70,7 @@ export default function Navbar() {
             className={`navbar__hamburger ${menuOpen ? 'is-open' : ''}`}
             onClick={() => setMenuOpen(v => !v)}
             aria-label="Menú"
-            id="navbar-menu-toggle"
+            aria-expanded={menuOpen}
           >
             <span /><span /><span />
           </button>

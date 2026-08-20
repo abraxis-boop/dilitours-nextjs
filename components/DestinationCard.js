@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 const categoryLabels = {
   'nacional': 'Nacional',
@@ -30,18 +31,25 @@ export default function DestinationCard({ destino }) {
   return (
     <div className="dest-card card">
       <div className="card-img-wrap">
-        <img src={destino.imagen} alt={destino.nombre} className="card-img" loading="lazy" />
+        <Image
+          src={destino.imagen}
+          alt={destino.nombre}
+          className="card-img"
+          width={400}
+          height={300}
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
         <span className={`badge-category badge-${destino.categoria} dest-card__badge`}>
           {categoryLabels[destino.categoria] || destino.categoria}
         </span>
         {destino.destacado && (
-          <span className="dest-card__featured">⭐ Destacado</span>
+          <span className="dest-card__featured">Destacado</span>
         )}
       </div>
       <div className="dest-card__body">
         <div className="dest-card__meta">
-          <span className="dest-card__country">📍 {destino.pais}</span>
-          <span className="dest-card__duration">🕐 {destino.duracion}</span>
+          <span className="dest-card__country">{destino.pais}</span>
+          <span className="dest-card__duration">{destino.duracion}</span>
         </div>
         <h3 className="dest-card__name">{destino.nombre}</h3>
         <p className="dest-card__desc">{destino.descripcion}</p>
@@ -56,7 +64,7 @@ export default function DestinationCard({ destino }) {
             </span>
             <span className="dest-card__price-pp">por persona</span>
           </div>
-          <Link href={`/destinos/${destino.id}`} className="btn btn-primary btn-sm dest-card__btn" id={`dest-card-btn-${destino.id}`}>
+          <Link href={`/destinos/${destino.id}`} className="btn btn-primary btn-sm dest-card__btn">
             Ver detalles
           </Link>
         </div>

@@ -1,11 +1,15 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Image from 'next/image';
 import { useVehiculos } from '../../data/useVehiculos';
+import { agency } from '../../data/agency';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import useScrollReveal from '../../hooks/useScrollReveal';
 
-const TIPO_EMOJI = { sedan: '🚗', suv: '🚙', van: '🚐', otro: '🚘' };
+const TIPO_LABEL = { sedan: 'Sedán', suv: 'SUV', van: 'Van', otro: 'Otro' };
 
 function DetailModal({ auto, onClose, onCotizar }) {
   const [imgIndex, setImgIndex] = useState(0);
@@ -23,7 +27,7 @@ function DetailModal({ auto, onClose, onCotizar }) {
               {auto.nombre}
             </h3>
             <p style={{ color: 'var(--gray-400)', fontSize: '13px' }}>
-              {TIPO_EMOJI[auto.tipo]} {auto.tipoLabel}
+              {auto.tipoLabel}
             </p>
           </div>
           <button className="modal-close" onClick={onClose} id="car-detail-close">✕</button>
@@ -31,7 +35,7 @@ function DetailModal({ auto, onClose, onCotizar }) {
 
         <div className="modal-body">
           <div className="car-gallery">
-            <img src={auto.imagenes[imgIndex]} alt={`${auto.nombre} foto ${imgIndex + 1}`} className="car-gallery__img" />
+            <Image src={auto.imagenes[imgIndex]} alt={`${auto.nombre} foto ${imgIndex + 1}`} width={560} height={350} className="car-gallery__img" />
             {total > 1 && (
               <>
                 <button className="car-gallery__arrow car-gallery__arrow--prev" onClick={anterior} id="car-gallery-prev" aria-label="Foto anterior">‹</button>
@@ -53,14 +57,14 @@ function DetailModal({ auto, onClose, onCotizar }) {
 
           <div className="car-detail-specs">
             {auto.marca && (
-              <div className="car-detail-spec"><span>🏷️</span><div><strong>Marca</strong><p>{auto.marca}</p></div></div>
+              <div className="car-detail-spec"><div><strong>Marca</strong><p>{auto.marca}</p></div></div>
             )}
             {auto.modelo && (
-              <div className="car-detail-spec"><span>📅</span><div><strong>Modelo</strong><p>{auto.modelo}</p></div></div>
+              <div className="car-detail-spec"><div><strong>Modelo</strong><p>{auto.modelo}</p></div></div>
             )}
-            <div className="car-detail-spec"><span>👤</span><div><strong>Capacidad</strong><p>{auto.capacidad} personas</p></div></div>
+            <div className="car-detail-spec"><div><strong>Capacidad</strong><p>{auto.capacidad} personas</p></div></div>
             {auto.rendimiento && (
-              <div className="car-detail-spec"><span>⛽</span><div><strong>Rendimiento</strong><p>{auto.rendimiento} km/l</p></div></div>
+              <div className="car-detail-spec"><div><strong>Rendimiento</strong><p>{auto.rendimiento} km/l</p></div></div>
             )}
           </div>
 
@@ -74,7 +78,7 @@ function DetailModal({ auto, onClose, onCotizar }) {
             onClick={() => onCotizar(auto)}
             id="car-detail-cotizar"
           >
-            📩 Cotizar este vehículo
+            Cotizar este vehículo
           </button>
         </div>
       </div>
@@ -88,6 +92,8 @@ function QuoteModal({ auto, onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const msg = `Hola! Quiero cotizar: ${auto.nombre} (${auto.marca} ${auto.modelo}). Ruta: ${form.lugar}. Del ${form.recogida} al ${form.devolucion}. Nombre: ${form.nombre}, Email: ${form.email}, Tel: ${form.telefono}`;
+    window.open(`${agency.social.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
     setEnviado(true);
   };
 
@@ -108,10 +114,10 @@ function QuoteModal({ auto, onClose }) {
         <div className="modal-body">
           {enviado ? (
             <div style={{ textAlign: 'center', padding: '32px 0' }}>
-              <span style={{ fontSize: '56px', display: 'block', marginBottom: '16px' }}>🎉</span>
+              <span style={{ fontSize: '56px', display: 'block', marginBottom: '16px' }}>✓</span>
               <h4 style={{ fontSize: '20px', color: 'var(--dark)', marginBottom: '8px' }}>¡Solicitud enviada!</h4>
               <p style={{ color: 'var(--gray-600)' }}>
-                Te enviaremos tu cotización (incluye chofer, gasolina, casetas y viáticos) en menos de 2 horas.
+                Te enviaremos tu cotización por WhatsApp en menos de 2 horas.
               </p>
             </div>
           ) : (
@@ -149,7 +155,7 @@ function QuoteModal({ auto, onClose }) {
                   value={form.lugar} onChange={e => setForm({ ...form, lugar: e.target.value })} id="car-modal-lugar" />
               </div>
               <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>
-                📩 Solicitar cotización
+                Solicitar cotización
               </button>
             </form>
           )}
@@ -160,6 +166,7 @@ function QuoteModal({ auto, onClose }) {
 }
 
 export default function RentaAutosPage() {
+  useScrollReveal();
   const { autos, loading, error } = useVehiculos();
   const [filtro, setFiltro] = useState('todos');
   const [autoDetalle, setAutoDetalle] = useState(null);
@@ -183,19 +190,19 @@ export default function RentaAutosPage() {
       <main style={{ paddingTop: 'var(--navbar-h)' }}>
         <div className="page-hero">
           <div className="container page-hero-content">
-            <div className="badge">Renta de Autos</div>
-            <h1>Nuestra <span style={{ color: 'var(--primary)' }}>Flota Premium</span></h1>
-            <p>Vehículos con chofer incluido. Cotizamos según tu ruta, incluyendo gasolina, casetas y viáticos.</p>
+            <div className="badge animate-fade-up">Renta de Autos</div>
+            <h1 className="animate-fade-up-delay-1">Nuestra <span style={{ color: 'var(--primary)' }}>Flota Premium</span></h1>
+            <p className="animate-fade-up-delay-2">Vehículos con chofer incluido. Cotizamos según tu ruta, incluyendo gasolina, casetas y viáticos.</p>
           </div>
         </div>
 
-        <div className="renta-benefits">
+        <div className="renta-benefits" data-reveal>
           <div className="container">
             <div className="renta-benefits__grid">
-              <div className="renta-benefit"><span>🧑‍✈️</span><p>Chofer <strong>incluido</strong></p></div>
-              <div className="renta-benefit"><span>⛽</span><p>Gasolina <strong>incluida</strong></p></div>
-              <div className="renta-benefit"><span>🛣️</span><p>Casetas <strong>incluidas</strong></p></div>
-              <div className="renta-benefit"><span>🧾</span><p>Cotización <strong>sin compromiso</strong></p></div>
+              <div className="renta-benefit"><p>Chofer <strong>incluido</strong></p></div>
+              <div className="renta-benefit"><p>Gasolina <strong>incluida</strong></p></div>
+              <div className="renta-benefit"><p>Casetas <strong>incluidas</strong></p></div>
+              <div className="renta-benefit"><p>Cotización <strong>sin compromiso</strong></p></div>
             </div>
           </div>
         </div>
@@ -221,7 +228,7 @@ export default function RentaAutosPage() {
 
         <section className="section" style={{ paddingTop: '32px' }}>
           <div className="container">
-            {loading && <p style={{ textAlign: 'center', padding: '48px 0' }}>Cargando flota...</p>}
+            {loading && <LoadingSpinner text="Cargando flota..." subtext="Conectando con nuestro sistema de vehículos" />}
 
             {error && (
               <p style={{ textAlign: 'center', padding: '48px 0', color: 'var(--danger, #d33)' }}>
@@ -244,12 +251,12 @@ export default function RentaAutosPage() {
                     tabIndex={0}
                   >
                     <div className="card-img-wrap">
-                      <img src={auto.imagenes[0]} alt={auto.nombre} className="car-card__img" loading="lazy" />
+                      <Image src={auto.imagenes[0]} alt={auto.nombre} width={400} height={250} sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="car-card__img" />
                       <span className="car-card__type-badge">
-                        {TIPO_EMOJI[auto.tipo]} {auto.tipoLabel}
+                        {auto.tipoLabel}
                       </span>
                       {auto.imagenes.length > 1 && (
-                        <span className="car-card__photo-count">📷 {auto.imagenes.length}</span>
+                        <span className="car-card__photo-count">{auto.imagenes.length} fotos</span>
                       )}
                     </div>
                     <div className="car-card__body">
@@ -259,9 +266,9 @@ export default function RentaAutosPage() {
                       )}
 
                       <div className="car-card__specs">
-                        <div className="car-card__spec"><span>👤</span>{auto.capacidad} personas</div>
+                        <div className="car-card__spec">{auto.capacidad} personas</div>
                         {auto.rendimiento && (
-                          <div className="car-card__spec"><span>⛽</span>{auto.rendimiento} km/l</div>
+                          <div className="car-card__spec">{auto.rendimiento} km/l</div>
                         )}
                       </div>
 
@@ -271,7 +278,7 @@ export default function RentaAutosPage() {
                           onClick={(e) => { e.stopPropagation(); setAutoCotizar(auto); }}
                           id={`car-quote-${auto.id}`}
                         >
-                          📩 Cotizar
+                          Cotizar
                         </button>
                       </div>
                     </div>
