@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { destinos, categorias } from '../../data/destinos';
+import { categorias } from '../../data/destinos';
+import { useDestinos } from '../../data/useDestinos';
 import { agency } from '../../data/agency';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
@@ -11,6 +12,7 @@ const pasos = ['Destino', 'Fechas & Grupo', 'Tus datos', 'Confirmar'];
 
 export default function CotizacionPage() {
   useScrollReveal();
+  const { destinos, loading: loadingDestinos } = useDestinos();
   const [paso, setPaso] = useState(0);
   const [enviado, setEnviado] = useState(false);
   const [form, setForm] = useState({
@@ -95,8 +97,10 @@ export default function CotizacionPage() {
                     </div>
                     <div className="form-group">
                       <label>Selecciona un destino de nuestro catálogo (opcional)</label>
-                      <select className="form-control" value={form.destino} onChange={e => upd('destino', e.target.value)} id="cotiz-destino">
-                        <option value="">— Seleccionar destino —</option>
+                      <select className="form-control" value={form.destino} onChange={e => upd('destino', e.target.value)} id="cotiz-destino" disabled={loadingDestinos}>
+                        <option value="">
+                          {loadingDestinos ? 'Cargando destinos...' : '— Seleccionar destino —'}
+                        </option>
                         {destinos
                           .filter(d => form.categoria === 'todos' || d.categoria === form.categoria)
                           .map(d => <option key={d.id} value={d.nombre}>{d.nombre} — desde ${d.precio} {d.moneda}</option>)}

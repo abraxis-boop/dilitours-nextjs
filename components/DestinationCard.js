@@ -54,7 +54,6 @@ export default function DestinationCard({ destino }) {
         <h3 className="dest-card__name">{destino.nombre}</h3>
         <p className="dest-card__desc">{destino.descripcion}</p>
         <Stars rating={destino.rating} />
-        <span className="dest-card__reviews">({destino.reviews} reseñas)</span>
 
         <div className="dest-card__footer">
           <div className="dest-card__price">

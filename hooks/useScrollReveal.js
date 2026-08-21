@@ -7,9 +7,11 @@ export default function useScrollReveal(options = {}) {
 
   useEffect(() => {
     const root = ref.current || document;
-    const elements = root.querySelectorAll('[data-reveal]:not(.revealed)');
 
-    if (elements.length === 0) return;
+    function revealElements() {
+      const elements = root.querySelectorAll('[data-reveal]:not(.revealed)');
+      elements.forEach((el) => observer.observe(el));
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -26,8 +28,26 @@ export default function useScrollReveal(options = {}) {
       }
     );
 
-    elements.forEach((el) => observer.observe(el));
+    revealElements();
 
-    return () => observer.disconnect();
+    const fallback = setTimeout(() => {
+      root.querySelectorAll('[data-reveal]:not(.revealed)').forEach((el) => {
+        el.classList.add('revealed');
+      });
+    }, 2000);
+
+    const mutObs = new MutationObserver(() => {
+      revealElements();
+    });
+    mutObs.observe(root === document ? document.body : root, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      observer.disconnect();
+      mutObs.disconnect();
+      clearTimeout(fallback);
+    };
   }, [options.threshold, options.rootMargin]);
 }

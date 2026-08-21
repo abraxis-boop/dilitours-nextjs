@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { destinos } from '../data/destinos';
+import { useDestinos } from '../data/useDestinos';
 import { testimonios } from '../data/testimonios';
 import { agency } from '../data/agency';
+import { destinos as destinosEstaticos } from '../data/destinos';
 import DestinationCard from '../components/DestinationCard';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import LoadingSpinner from '../components/LoadingSpinner';
 import useScrollReveal from '../hooks/useScrollReveal';
 
 const stats = [
@@ -43,8 +45,15 @@ const ventajas = [
 
 export default function Home() {
   useScrollReveal();
-  const destacados = destinos.filter(d => d.destacado).slice(0, 6);
+  const [retryKey, setRetryKey] = useState(0);
+  const { destinos, loading: loadingDestinos, error: errorDestinos } = useDestinos(retryKey);
   const [testiIdx, setTestiIdx] = useState(0);
+
+  const destacados = destinos.length > 0
+    ? destinos.filter(d => d.destacado).slice(0, 6)
+    : errorDestinos
+      ? destinosEstaticos.filter(d => d.destacado).slice(0, 6)
+      : [];
 
   const prev = () => setTestiIdx(i => (i === 0 ? testimonios.length - 1 : i - 1));
   const next = () => setTestiIdx(i => (i === testimonios.length - 1 ? 0 : i + 1));
@@ -109,11 +118,14 @@ export default function Home() {
               <h2>Escapes que <span style={{ color: 'var(--primary)' }}>enamoran</span></h2>
               <p>Seleccionamos los mejores destinos para cada tipo de viajero. ¿Cuál es el tuyo?</p>
             </div>
-            <div className="grid-3">
-              {destacados.map(d => (
-                <DestinationCard key={d.id} destino={d} />
-              ))}
-            </div>
+            {loadingDestinos && <LoadingSpinner text="Cargando destinos..." />}
+            {!loadingDestinos && (
+              <div className="grid-3">
+                {destacados.map(d => (
+                  <DestinationCard key={d.id} destino={d} />
+                ))}
+              </div>
+            )}
             <div style={{ textAlign: 'center', marginTop: '48px' }}>
               <Link href="/destinos" className="btn btn-outline-dark btn-lg">
                 Ver todos los destinos →

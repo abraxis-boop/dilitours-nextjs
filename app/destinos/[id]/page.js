@@ -4,10 +4,11 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { destinos } from '../../../data/destinos';
+import { useDestinos } from '../../../data/useDestinos';
 import { agency } from '../../../data/agency';
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
+import LoadingSpinner from '../../../components/LoadingSpinner';
 import useScrollReveal from '../../../hooks/useScrollReveal';
 
 const categoryLabels = {
@@ -18,10 +19,37 @@ const categoryLabels = {
 export default function DetalleDestinoPage() {
   useScrollReveal();
   const params = useParams();
+  const { destinos, loading, error } = useDestinos();
   const id = params.id;
   const destino = destinos.find(d => d.id === parseInt(id));
   const [form, setForm] = useState({ nombre: '', email: '', telefono: '', fecha: '', personas: 1, comentarios: '' });
   const [enviado, setEnviado] = useState(false);
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <main style={{ paddingTop: 'var(--navbar-h)' }}>
+          <LoadingSpinner text="Cargando destino..." subtext="Preparando la información de tu próximo viaje" />
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <Navbar />
+        <main style={{ paddingTop: 'var(--navbar-h)', textAlign: 'center', padding: '120px 24px' }}>
+          <h2>No pudimos cargar este destino</h2>
+          <p style={{ color: 'var(--danger, #d33)', marginTop: '8px' }}>Intenta de nuevo más tarde.</p>
+          <Link href="/destinos" className="btn btn-primary" style={{ marginTop: '24px' }}>Volver a destinos</Link>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   if (!destino) {
     return (
@@ -65,7 +93,7 @@ export default function DetalleDestinoPage() {
             <div className="detalle-hero__meta animate-fade-up-delay-3">
               <span>{destino.pais}</span>
               <span>{destino.duracion}</span>
-              <span>{destino.rating} ({destino.reviews} reseñas)</span>
+              <span>{destino.rating} ★</span>
             </div>
           </div>
         </div>

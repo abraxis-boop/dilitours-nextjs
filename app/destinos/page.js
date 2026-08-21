@@ -2,15 +2,18 @@
 
 import { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { destinos, categorias } from '../../data/destinos';
+import { categorias } from '../../data/destinos';
+import { useDestinos } from '../../data/useDestinos';
 import DestinationCard from '../../components/DestinationCard';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import useScrollReveal from '../../hooks/useScrollReveal';
 
 function DestinosContent() {
   useScrollReveal();
   const params = useSearchParams();
+  const { destinos, loading, error } = useDestinos();
   const [catActiva, setCatActiva] = useState(params.get('cat') || 'todos');
   const [busqueda, setBusqueda] = useState('');
   const [orden, setOrden] = useState('destacados');
@@ -31,7 +34,7 @@ function DestinosContent() {
     else if (orden === 'rating') res.sort((a, b) => b.rating - a.rating);
     else res.sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0));
     return res;
-  }, [catActiva, busqueda, orden]);
+  }, [destinos, catActiva, busqueda, orden]);
 
   return (
     <>
@@ -69,24 +72,36 @@ function DestinosContent() {
                 <option value="precio-desc">Precio: mayor a menor</option>
                 <option value="rating">Mejor calificados</option>
               </select>
-            </div>
-            <div className="destinos-cats">
-              {categorias.map(c => (
-                <button
-                  key={c.id}
-                  className={`destinos-cat-btn ${catActiva === c.id ? 'active' : ''}`}
-                  onClick={() => setCatActiva(c.id)}
-                  id={`cat-btn-${c.id}`}
-                >
-                  {c.label}
-                </button>
-              ))}
+              <div className="destinos-cats">
+                {categorias.map(c => (
+                  <button
+                    key={c.id}
+                    className={`destinos-cat-btn ${catActiva === c.id ? 'active' : ''}`}
+                    onClick={() => setCatActiva(c.id)}
+                    id={`cat-btn-${c.id}`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
         <section className="section" style={{ paddingTop: '40px' }} data-reveal>
           <div className="container">
+            {loading && (
+              <LoadingSpinner text="Cargando destinos..." subtext="Buscando los mejores paquetes para ti" />
+            )}
+
+            {error && (
+              <p style={{ textAlign: 'center', padding: '48px 0', color: 'var(--danger, #d33)' }}>
+                No pudimos cargar los destinos en este momento. Intenta de nuevo más tarde.
+              </p>
+            )}
+
+            {!loading && !error && (
+              <>
             <p className="destinos-count">
               {filtrados.length === 0
                 ? 'No se encontraron destinos'
@@ -104,6 +119,8 @@ function DestinosContent() {
                   Ver todos los destinos
                 </button>
               </div>
+            )}
+              </>
             )}
           </div>
         </section>

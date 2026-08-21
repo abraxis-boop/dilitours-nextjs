@@ -1637,7 +1637,7 @@ select.form-control {
 .destinos-filters-wrap {
   background: var(--white);
   border-bottom: 1px solid var(--gray-100);
-  padding: 24px 0 0;
+  padding: 10px 0;
   position: sticky;
   top: var(--navbar-h);
   z-index: 50;
@@ -1646,39 +1646,45 @@ select.form-control {
 
 .destinos-filters {
   display: flex;
-  gap: 16px;
-  margin-bottom: 20px;
+  align-items: center;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .destinos-search {
   position: relative;
-  flex: 1;
-  min-width: 240px;
+  flex: 1 1 220px;
+  min-width: 180px;
 }
 
 .destinos-search__icon {
   position: absolute;
-  left: 14px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .destinos-search__input {
-  padding-left: 40px !important;
+  padding-left: 38px !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
 }
 
 .destinos-sort {
-  min-width: 220px;
+  min-width: 160px;
+  width: auto;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
 }
 
 .destinos-cats {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
   overflow-x: auto;
-  padding-bottom: 16px;
   scrollbar-width: none;
+  min-width: 100%;
 }
 
 .destinos-cats::-webkit-scrollbar {
@@ -1686,9 +1692,9 @@ select.form-control {
 }
 
 .destinos-cat-btn {
-  padding: 8px 18px;
+  padding: 6px 14px;
   border-radius: var(--radius-full);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   background: var(--gray-100);
   color: var(--gray-600);
