@@ -16,7 +16,7 @@
  */
 const ALLOWED_TABLES = {
   vehiculos: ['tipo_vehiculo', 'nombre_vehiculo', 'marca', 'modelo', 'capacidad', 'km/l', 'imagen1', 'imagen2', 'imagen3', 'imagen4', 'imagen5'],
-  Catalogo_tours: ['id', 'nombre', 'pais', 'categoria', 'descripcion', 'notas', 'precio', 'moneda', 'duracion', 'destacado', 'activo', 'rating', 'incluye', 'itinerario', 'imagen1', 'imagen2', 'imagen3', 'imagen4', 'imagen5'],
+  Catalogo_tours: ['id', 'nombre', 'pais', 'categoria', 'descripcion', 'notas', 'precio', 'moneda', 'duracion', 'destacado', 'activo', 'rating', 'raiting', 'incluye', 'itinerario', 'imagen1', 'imagen2', 'imagen3', 'imagen4', 'imagen5'],
   Hotel: ['nombre', 'categoria', 'municipio', 'estado', 'pais', 'calle_numero', 'colonia', 'descripcion', 'imagen1', 'imagen2', 'imagen3'],
   catalogo_productos: ['Nombre', 'Precio', 'imagen1', 'imagen2', 'imagen3'],
 };
@@ -78,12 +78,18 @@ function getTableData(table) {
   }
 
   const rows = JSON.parse(text);
-  const allowedColumns = ALLOWED_TABLES[table];
+  const allowedColumns = ALLOWED_TABLES[table] || [];
 
   return rows.map((row) => {
     const filtered = { _appId: appId, _tableName: table };
-    allowedColumns.forEach((col) => {
-      filtered[col] = row[col];
+    Object.keys(row).forEach((key) => {
+      const cleanKey = key.trim();
+      const lowerKey = cleanKey.toLowerCase();
+      if (allowedColumns.some(col => col.trim().toLowerCase() === lowerKey)) {
+        filtered[key] = row[key];
+        filtered[cleanKey] = row[key];
+        filtered[lowerKey] = row[key];
+      }
     });
     return filtered;
   });

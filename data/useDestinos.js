@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { fetchTable } from '../services/api';
+import { destinos as destinosEstaticos } from './destinos';
 
 function buildAppSheetImageUrl(appId, tableName, rutaRelativa) {
   if (!rutaRelativa) return null;
@@ -58,29 +59,65 @@ function parseNumero(valor, porDefecto) {
 function parseIncluye(raw) {
   if (!raw) return [];
   if (Array.isArray(raw)) return raw.map(s => String(s).trim()).filter(Boolean);
-  return String(raw)
-    .split(/[,;\n]/)
-    .map(s => s.trim())
+  
+  const rawStr = String(raw).trim();
+  if (!rawStr) return [];
+
+  const splitPattern = rawStr.includes('\n') ? /[\n\r;•]+/ : /[,;\n\r•]+/;
+  
+  return rawStr
+    .split(splitPattern)
+    .map(s => s.trim().replace(/^[-•*✓\s]+/, ''))
     .filter(Boolean);
 }
 
 function parseItinerario(raw) {
   if (!raw) return [];
   if (Array.isArray(raw)) return raw;
-  return String(raw)
-    .split('\n')
+  if (typeof raw !== 'string') return [];
+
+  const lineas = raw
+    .split(/[\n\r]+/)
     .map(linea => linea.trim())
-    .filter(Boolean)
-    .map((linea, i) => {
-      const partes = linea.split('|').map(p => p.trim());
-      if (partes.length >= 3) {
-        return { dia: parseInt(partes[0], 10) || i + 1, titulo: partes[1], descripcion: partes.slice(2).join(' | ') };
+    .filter(Boolean);
+
+  if (lineas.length === 0) return [];
+
+  return lineas.map((linea, i) => {
+    const partesPipe = linea.split('|').map(p => p.trim());
+    if (partesPipe.length >= 3) {
+      const matchDia = partesPipe[0].match(/\d+/);
+      return {
+        dia: matchDia ? parseInt(matchDia[0], 10) : i + 1,
+        titulo: partesPipe[1],
+        descripcion: partesPipe.slice(2).join(' | ')
+      };
+    }
+    if (partesPipe.length === 2) {
+      const matchDia = partesPipe[0].match(/^(?:Día|Day)?\s*(\d+)$/i);
+      if (matchDia) {
+        return { dia: parseInt(matchDia[1], 10), titulo: partesPipe[1], descripcion: '' };
       }
-      if (partes.length === 2) {
-        return { dia: i + 1, titulo: partes[0], descripcion: partes[1] };
+      return { dia: i + 1, titulo: partesPipe[0], descripcion: partesPipe[1] };
+    }
+
+    const matchDia = linea.match(/^(?:Día\s*(\d+)|Day\s*(\d+)|(\d+))\s*[:\-\.]\s*(.*)$/i);
+    if (matchDia) {
+      const diaNum = parseInt(matchDia[1] || matchDia[2] || matchDia[3], 10);
+      const resto = matchDia[4].trim();
+      const partesResto = resto.split(/[\-\–\:]\s*/);
+      if (partesResto.length > 1) {
+        return {
+          dia: diaNum || i + 1,
+          titulo: partesResto[0].trim(),
+          descripcion: partesResto.slice(1).join(' - ').trim()
+        };
       }
-      return { dia: i + 1, titulo: linea, descripcion: '' };
-    });
+      return { dia: diaNum || i + 1, titulo: resto, descripcion: '' };
+    }
+
+    return { dia: i + 1, titulo: linea, descripcion: '' };
+  });
 }
 
 function mapDestino(row, index) {
@@ -89,8 +126,41 @@ function mapDestino(row, index) {
     ? imagenesOriginales.map(url => resizedImage(url, 1200, 800))
     : ['/destinations_grid.jpg'];
 
+  const parsedId = parseNumero(row.id, index + 1);
+  const rawIncluye = 
+    row.incluye ?? row.Incluye ?? row.INCLUYE ?? row.incluidos ?? row.Incluidos ??
+    row.servicios ?? row.que_incluye ?? row.incluido ?? row['¿Qué incluye?'] ?? row['Que incluye'] ?? row['incluye'];
+
+  let incluyeFinal = parseIncluye(rawIncluye);
+  if (!incluyeFinal || incluyeFinal.length === 0) {
+    const estatico = destinosEstaticos.find(d => d.id === parsedId || d.nombre.toLowerCase().trim() === String(row.nombre || '').toLowerCase().trim());
+    if (estatico && estatico.incluye && estatico.incluye.length) {
+      incluyeFinal = estatico.incluye;
+    } else {
+      incluyeFinal = [];
+    }
+  }
+
+  const rawItinerario = 
+    row.itinerario ?? row.Itinerario ?? row.ITINERARIO ?? row.itinerarios ?? 
+    row.Itinerarios ?? row.itinerario_detallado ?? row.Itinerario_Detallado ?? row['Itinerario'] ?? row['itinerario'];
+
+  let itinerarioFinal = parseItinerario(rawItinerario);
+
+  if (!itinerarioFinal || itinerarioFinal.length === 0) {
+    const estatico = destinosEstaticos.find(d => d.id === parsedId || d.nombre.toLowerCase().trim() === String(row.nombre || '').toLowerCase().trim());
+    if (estatico && estatico.itinerario && estatico.itinerario.length > 0) {
+      itinerarioFinal = estatico.itinerario;
+    } else {
+      itinerarioFinal = [];
+    }
+  }
+
+  const duracionFinal = row.duracion ?? row['duracion '] ?? row.Duracion ?? row.DURACION ?? '';
+  const ratingFinal = parseNumero(row.raiting ?? row.rating ?? row.Raiting ?? row.Rating, 4.5);
+
   return {
-    id: parseNumero(row.id, index + 1),
+    id: parsedId,
     nombre: row.nombre || 'Destino',
     pais: row.pais || '',
     categoria: normalizarCategoria(row.categoria),
@@ -98,13 +168,13 @@ function mapDestino(row, index) {
     imagenes,
     precio: parseNumero(row.precio, 0),
     moneda: row.moneda || 'USD',
-    duracion: row.duracion || '',
+    duracion: duracionFinal,
     descripcion: row.descripcion || '',
     destacado: esVerdadero(row.destacado),
     activo: row.activo == null || row.activo === '' ? true : esVerdadero(row.activo),
-    rating: parseNumero(row.rating, 4.5),
-    incluye: parseIncluye(row.incluye),
-    itinerario: parseItinerario(row.itinerario),
+    rating: ratingFinal,
+    incluye: incluyeFinal,
+    itinerario: itinerarioFinal,
   };
 }
 

@@ -24,7 +24,7 @@ export default function useScrollReveal(options = {}) {
       },
       {
         threshold: options.threshold || 0,
-        rootMargin: options.rootMargin || '0px 0px -20% 0px',
+        rootMargin: options.rootMargin || '0px 0px 50px 0px',
       }
     );
 
@@ -34,7 +34,7 @@ export default function useScrollReveal(options = {}) {
       root.querySelectorAll('[data-reveal]:not(.revealed)').forEach((el) => {
         el.classList.add('revealed');
       });
-    }, 2000);
+    }, 1000);
 
     const mutObs = new MutationObserver(() => {
       revealElements();

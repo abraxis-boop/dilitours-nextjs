@@ -49,11 +49,12 @@ export default function Home() {
   const { destinos, loading: loadingDestinos, error: errorDestinos } = useDestinos(retryKey);
   const [testiIdx, setTestiIdx] = useState(0);
 
+  const filtradosDestacados = destinos.filter(d => d.destacado);
   const destacados = destinos.length > 0
-    ? destinos.filter(d => d.destacado).slice(0, 6)
-    : errorDestinos
-      ? destinosEstaticos.filter(d => d.destacado).slice(0, 6)
-      : [];
+    ? (filtradosDestacados.length > 0 ? filtradosDestacados.slice(0, 6) : destinos.slice(0, 6))
+    : (destinosEstaticos.filter(d => d.destacado).length > 0
+        ? destinosEstaticos.filter(d => d.destacado).slice(0, 6)
+        : destinosEstaticos.slice(0, 6));
 
   const prev = () => setTestiIdx(i => (i === 0 ? testimonios.length - 1 : i - 1));
   const next = () => setTestiIdx(i => (i === testimonios.length - 1 ? 0 : i + 1));
