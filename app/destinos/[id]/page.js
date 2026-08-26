@@ -80,8 +80,22 @@ export default function DetalleDestinoPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const lineas = [
+      `🌍 RESERVA DE PAQUETE`,
+      '',
+      `Paquete: ${destino.nombre}`,
+      `Duración: ${destino.duracion}`,
+      '',
+      `Nombre: ${form.nombre}`,
+      `Email: ${form.email}`,
+      `Tel: ${form.telefono || 'No proporcionado'}`,
+      `Fecha tentativa: ${form.fecha || 'Por definir'}`,
+      `Personas: ${form.personas}`,
+      `Comentarios: ${form.comentarios || 'Ninguno'}`,
+    ];
+    const msg = lineas.join('\n');
     window.open(
-      `${agency.social.whatsapp}?text=${encodeURIComponent(`Hola! Me interesa el paquete "${destino.nombre}" (${destino.duracion}). Quiero viajar con ${form.personas} persona(s). ${form.comentarios}`)}`,
+      `${agency.social.whatsapp}?text=${encodeURIComponent(msg)}`,
       '_blank'
     );
     setEnviado(true);

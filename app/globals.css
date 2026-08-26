@@ -2005,7 +2005,7 @@ select.form-control {
 }
 
 .detalle-price-card__badge {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 151, 178, 0.25);
   color: rgba(255, 255, 255, 0.9);
   font-size: 12px;
   padding: 6px 12px;

@@ -28,7 +28,29 @@ export default function CotizacionPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const destinoText = form.destino || form.destino_personalizado || 'Personalizado';
-    const msg = `Hola! Solicito cotización:\n- Destino: ${destinoText}\n- Fechas: ${form.fecha_salida || 'Por definir'} → ${form.fecha_regreso || 'Por definir'}\n- Grupo: ${form.adultos} adultos, ${form.ninos} niños\n- Habitación: ${form.tipo_habitacion}\n- Nombre: ${form.nombre}\n- Email: ${form.email}\n- Tel: ${form.telefono}\n- Ciudad: ${form.ciudad || 'No especificada'}\n- Cómo nos conociste: ${form.como_nos_conocio || 'No especificado'}\n- Comentarios: ${form.comentarios || 'Ninguno'}`;
+    const salida = form.fecha_salida || 'Por definir';
+    const regreso = form.fecha_regreso || 'Por definir';
+    const ciudad = form.ciudad || 'No especificada';
+    const comoNos = form.como_nos_conocio || 'No especificado';
+    const comentarios = form.comentarios || 'Ninguno';
+
+    const lineas = [
+      '✈️ SOLICITUD DE COTIZACIÓN',
+      '',
+      `Destino: ${destinoText}`,
+      `Fechas: ${salida} al ${regreso}`,
+      `Grupo: ${form.adultos} adulto(s), ${form.ninos} niño(s)`,
+      `Habitación: ${form.tipo_habitacion}`,
+      '',
+      `Nombre: ${form.nombre}`,
+      `Email: ${form.email}`,
+      `Tel: ${form.telefono}`,
+      `Ciudad: ${ciudad}`,
+      `Nos conoció por: ${comoNos}`,
+      `Comentarios: ${comentarios}`,
+    ];
+
+    const msg = lineas.join('\n');
     window.open(`${agency.social.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
     setEnviado(true);
   };
