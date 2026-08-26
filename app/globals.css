@@ -2926,21 +2926,33 @@ select.form-control {
 }
 
 .contacto-social-btn {
-  width: 44px;
-  height: 44px;
-  background: var(--light-bg);
-  border-radius: 50%;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-size: 20px;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--light-bg);
+  border-radius: var(--radius-full);
+  color: var(--dark);
+  font-weight: 600;
+  font-size: 14px;
   transition: var(--transition-fast);
-  border: 1px solid var(--gray-100);
+  border: 1px solid var(--gray-200);
+  text-decoration: none;
 }
 
 .contacto-social-btn:hover {
   background: var(--primary);
-  transform: translateY(-3px);
+  color: var(--white);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.contacto-social-btn svg {
+  fill: currentColor;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .contacto-map {
@@ -2949,27 +2961,15 @@ select.form-control {
   border: 1px solid rgba(0, 151, 178, 0.15);
   overflow: hidden;
   margin-top: 24px;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 300px;
+  width: 100%;
 }
 
-.contacto-map__inner {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.contacto-map__inner span {
-  font-size: 48px;
-}
-
-.contacto-map__inner p {
-  color: var(--gray-600);
-  font-size: 14px;
+.contacto-map iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
 }
 
 .contacto-form-card {

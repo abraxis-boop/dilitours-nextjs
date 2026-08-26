@@ -13,10 +13,10 @@ export const agency = {
   },
 
   contact: {
-    phone: '+52 1 311 392 4489',
-    phoneRaw: 'tel:+5213113924489',
-    whatsapp: '+52 1 311 392 4489',
-    whatsappLink: 'https://wa.me/5213113924489',
+    phone: '+52 1 311 392 4482',
+    phoneRaw: 'tel:+5213113924482',
+    whatsapp: '+52 1 311 392 4482',
+    whatsappLink: 'https://wa.me/5213113924482',
     email: 'logisticadeviajes@diligenciascorp.org',
     emailMailto: 'mailto:logisticadeviajes@diligenciascorp.org',
     address: 'Nápoles 9, Col. Ciudad del Valle',
@@ -28,7 +28,7 @@ export const agency = {
     facebook: 'https://www.facebook.com/LinoA.Bastida/',
     tiktok: 'https://www.tiktok.com/@dilitours',
     instagram: null,
-    whatsapp: 'https://wa.me/5213113924489',
+    whatsapp: 'https://wa.me/5213113924482',
   },
 
   seo: {

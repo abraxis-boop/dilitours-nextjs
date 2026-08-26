@@ -73,20 +73,33 @@ export default function ContactoPage() {
 
                 <div className="contacto-social">
                   <h4>Síguenos en redes</h4>
-                  <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
-                    <a href={agency.social.facebook} target="_blank" rel="noreferrer" className="contacto-social-btn">Facebook</a>
-                    <a href={agency.social.tiktok} target="_blank" rel="noreferrer" className="contacto-social-btn">TikTok</a>
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '12px', flexWrap: 'wrap' }}>
+                    <a href={agency.social.facebook} target="_blank" rel="noreferrer" className="contacto-social-btn" aria-label="Facebook">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                      </svg>
+                      Facebook
+                    </a>
+                    <a href={agency.social.tiktok} target="_blank" rel="noreferrer" className="contacto-social-btn" aria-label="TikTok">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.3 6.34 6.34 0 0 0 9.49 21.6a6.34 6.34 0 0 0 6.34-6.34V8.63a8.16 8.16 0 0 0 4.74 1.5V6.69a4.85 4.85 0 0 1-.98-.0z" />
+                      </svg>
+                      TikTok
+                    </a>
                   </div>
                 </div>
 
                 <div className="contacto-map">
-                  <div className="contacto-map__inner">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="1.5" width="48" height="48"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    <p>{agency.contact.address}, {agency.contact.city}</p>
-                    <a href={`https://maps.google.com/?q=${encodeURIComponent(agency.contact.address + ', ' + agency.contact.city)}`} target="_blank" rel="noreferrer" className="btn btn-outline-dark btn-sm">
-                      Ver en Google Maps
-                    </a>
-                  </div>
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3712.474701548987!2d-104.88395662574678!3d21.489118571809737!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8427372327ab78a9%3A0x546e18f8b2099e80!2sN%C3%A1poles%209%2C%20Cd%20del%20Valle%2C%2063157%20Tepic%2C%20Nay.!5e0!3m2!1ses!2smx!4v1787759414739!5m2!1ses!2smx"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen=""
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    title="Ubicación DiliTours"
+                  />
                 </div>
               </div>
 
