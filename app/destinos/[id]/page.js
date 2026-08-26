@@ -157,9 +157,9 @@ export default function DetalleDestinoPage() {
                   <div className="detalle-section-card">
                     <h2>Itinerario detallado</h2>
                     <div className="detalle-itinerario">
-                      {destino.itinerario.map((item) => (
-                        <div key={item.dia} className="detalle-itinerario__item">
-                          <div className="detalle-itinerario__day">Día {item.dia}</div>
+                      {destino.itinerario.map((item, idx) => (
+                        <div key={idx} className="detalle-itinerario__item">
+                          <div className="detalle-itinerario__day">{item.etiqueta || (typeof item.dia === 'number' ? `Día ${item.dia}` : item.dia)}</div>
                           <div className="detalle-itinerario__content">
                             <h4>{item.titulo}</h4>
                             {item.descripcion && <p>{item.descripcion}</p>}

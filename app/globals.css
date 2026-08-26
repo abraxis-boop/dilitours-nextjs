@@ -1912,7 +1912,7 @@ select.form-control {
 
 .detalle-itinerario__item {
   display: grid;
-  grid-template-columns: 80px 1fr;
+  grid-template-columns: 100px 1fr;
   gap: 20px;
   padding: 16px 0;
   border-bottom: 1px solid var(--gray-100);
@@ -1929,14 +1929,16 @@ select.form-control {
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   height: fit-content;
-  padding: 8px 4px;
+  padding: 8px 6px;
+  border: 1px solid rgba(0, 151, 178, 0.15);
+  white-space: nowrap;
 }
 
 .detalle-itinerario__content h4 {

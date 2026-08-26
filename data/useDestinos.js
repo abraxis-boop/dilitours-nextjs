@@ -9,26 +9,74 @@ function buildAppSheetImageUrl(appId, tableName, rutaRelativa) {
   return `https://www.appsheet.com/template/gettablefileurl?appName=${encodeURIComponent(appId)}&tableName=${encodeURIComponent(tableName)}&fileName=${encodeURIComponent(rutaRelativa)}`;
 }
 
-function resizedImage(url, width, height) {
-  if (!url) return null;
-  const clean = String(url).replace(/^https?:\/\//, '');
-  return (
-    'https://images.weserv.nl/?url=' +
-    encodeURIComponent(clean) +
-    '&w=' + width +
-    (height ? '&h=' + height + '&fit=cover' : '') +
-    '&q=75&output=webp'
-  );
+function fixGoogleDriveUrl(url) {
+  if (!url || typeof url !== 'string') return url;
+  const trimmed = url.trim();
+  const match = trimmed.match(/(?:drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    return `https://lh3.googleusercontent.com/d/${match[1]}=w1600`;
+  }
+  return trimmed;
 }
 
-function collectImages(row, maxImages = 5) {
+function resizedImage(url, width = 1600) {
+  if (!url || typeof url !== 'string') return null;
+  const fixed = fixGoogleDriveUrl(url.trim());
+  if (!fixed) return null;
+
+  if (fixed.includes('googleusercontent.com') || fixed.startsWith('/')) {
+    return fixed;
+  }
+  if (!fixed.includes('appsheet.com')) {
+    return fixed;
+  }
+  const clean = fixed.replace(/^https?:\/\//, '');
+  return `https://images.weserv.nl/?url=${encodeURIComponent(clean)}&w=${width}&q=85&output=webp`;
+}
+
+function collectImages(row, maxImages = 10) {
+  if (!row) return [];
   const urls = [];
+
+  const addUrl = (val) => {
+    if (!val || typeof val !== 'string') return;
+    const trimmed = val.trim();
+    if (!trimmed) return;
+    let fullUrl = null;
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('/')) {
+      fullUrl = fixGoogleDriveUrl(trimmed);
+    } else {
+      fullUrl = buildAppSheetImageUrl(row._appId, row._tableName, trimmed);
+    }
+    if (fullUrl && !urls.includes(fullUrl)) {
+      urls.push(fullUrl);
+    }
+  };
+
+  // Check single keys
+  const singleKeys = [
+    'imagen', 'Imagen', 'IMAGEN',
+    'foto', 'Foto', 'FOTO',
+    'image', 'Image', 'IMAGE',
+    'url_imagen', 'URL_Imagen', 'Url_Imagen',
+    'portada', 'Portada'
+  ];
+  for (const k of singleKeys) {
+    addUrl(row[k]);
+  }
+
+  // Check numbered keys (imagen1 ... imagen10)
   for (let i = 1; i <= maxImages; i++) {
-    const filename = row[`imagen${i}`];
-    if (filename) {
-      urls.push(buildAppSheetImageUrl(row._appId, row._tableName, filename));
+    const keysToTry = [
+      `imagen${i}`, `Imagen${i}`, `imagen_${i}`, `Imagen_${i}`,
+      `foto${i}`, `Foto${i}`, `foto_${i}`, `Foto_${i}`,
+      `image${i}`, `Image${i}`, `image_${i}`, `Image_${i}`
+    ];
+    for (const k of keysToTry) {
+      addUrl(row[k]);
     }
   }
+
   return urls;
 }
 
@@ -71,12 +119,70 @@ function parseIncluye(raw) {
     .filter(Boolean);
 }
 
+function formatLabelAndDay(part, defaultIndex) {
+  if (!part) return { dia: defaultIndex + 1, etiqueta: `Día ${defaultIndex + 1}` };
+  
+  const trimmed = String(part).trim();
+  
+  // 1. Check for time format (e.g. 12:00 PM, 03:30 AM, 14:00, 7:00 pm)
+  if (/\b\d{1,2}:\d{2}\s*(?:[ap]\.?m\.?)?/i.test(trimmed) || /\b\d{1,2}\s*(?:[ap]\.?m\.)/i.test(trimmed)) {
+    return { dia: trimmed, etiqueta: trimmed };
+  }
+
+  // 2. Check for "Día X" or "Day X"
+  const matchDiaWord = trimmed.match(/^(?:Día|Day)\s*(\d+)$/i);
+  if (matchDiaWord) {
+    const num = parseInt(matchDiaWord[1], 10);
+    return { dia: num, etiqueta: `Día ${num}` };
+  }
+
+  // 3. Check if purely a number
+  if (/^\d+$/.test(trimmed)) {
+    const num = parseInt(trimmed, 10);
+    return { dia: num, etiqueta: `Día ${num}` };
+  }
+
+  // 4. Any custom string label (e.g. "Tarde", "Mañana", "Salida", "Check-in")
+  return { dia: trimmed, etiqueta: trimmed };
+}
+
 function parseItinerario(raw) {
   if (!raw) return [];
-  if (Array.isArray(raw)) return raw;
+
+  if (Array.isArray(raw)) {
+    return raw.map((item, i) => {
+      if (typeof item === 'object' && item !== null) {
+        const { dia, etiqueta } = formatLabelAndDay(item.etiqueta || item.dia || item.label, i);
+        return {
+          dia,
+          etiqueta,
+          titulo: item.titulo || item.title || etiqueta,
+          descripcion: item.descripcion || item.description || item.detalle || ''
+        };
+      }
+      const parsedStr = parseItinerario(String(item));
+      return parsedStr[0] || { dia: i + 1, etiqueta: `Día ${i + 1}`, titulo: String(item), descripcion: '' };
+    });
+  }
+
   if (typeof raw !== 'string') return [];
 
-  const lineas = raw
+  const rawStr = raw.trim();
+  if (!rawStr) return [];
+
+  if (rawStr.startsWith('[') && rawStr.endsWith(']')) {
+    try {
+      const parsed = JSON.parse(rawStr);
+      if (Array.isArray(parsed)) {
+        return parseItinerario(parsed);
+      }
+    } catch (e) {
+      // Continue to line parsing
+    }
+  }
+
+  const lineas = rawStr
+    .replace(/\\n/g, '\n')
     .split(/[\n\r]+/)
     .map(linea => linea.trim())
     .filter(Boolean);
@@ -85,45 +191,73 @@ function parseItinerario(raw) {
 
   return lineas.map((linea, i) => {
     const partesPipe = linea.split('|').map(p => p.trim());
+
     if (partesPipe.length >= 3) {
-      const matchDia = partesPipe[0].match(/\d+/);
+      const { dia, etiqueta } = formatLabelAndDay(partesPipe[0], i);
       return {
-        dia: matchDia ? parseInt(matchDia[0], 10) : i + 1,
-        titulo: partesPipe[1],
+        dia,
+        etiqueta,
+        titulo: partesPipe[1] || etiqueta,
         descripcion: partesPipe.slice(2).join(' | ')
       };
     }
+
     if (partesPipe.length === 2) {
-      const matchDia = partesPipe[0].match(/^(?:Día|Day)?\s*(\d+)$/i);
-      if (matchDia) {
-        return { dia: parseInt(matchDia[1], 10), titulo: partesPipe[1], descripcion: '' };
+      const isTimeOrDay = /^(?:Día|Day)?\s*\d+/i.test(partesPipe[0]) || /\b\d{1,2}:\d{2}/i.test(partesPipe[0]);
+      if (isTimeOrDay) {
+        const { dia, etiqueta } = formatLabelAndDay(partesPipe[0], i);
+        return {
+          dia,
+          etiqueta,
+          titulo: partesPipe[1],
+          descripcion: ''
+        };
       }
-      return { dia: i + 1, titulo: partesPipe[0], descripcion: partesPipe[1] };
+      const { dia, etiqueta } = formatLabelAndDay(null, i);
+      return {
+        dia,
+        etiqueta,
+        titulo: partesPipe[0],
+        descripcion: partesPipe[1]
+      };
     }
 
-    const matchDia = linea.match(/^(?:Día\s*(\d+)|Day\s*(\d+)|(\d+))\s*[:\-\.]\s*(.*)$/i);
+    const matchDia = linea.match(/^(?:Día\s*(\d+)|Day\s*(\d+)|(\d{1,2}:\d{2}\s*(?:[ap]\.?m\.?)?)|(\d+))\s*[:\-\.]\s*(.*)$/i);
     if (matchDia) {
-      const diaNum = parseInt(matchDia[1] || matchDia[2] || matchDia[3], 10);
-      const resto = matchDia[4].trim();
+      const matchedPart = matchDia[1] || matchDia[2] || matchDia[3] || matchDia[4];
+      const { dia, etiqueta } = formatLabelAndDay(matchedPart, i);
+      const resto = matchDia[5].trim();
       const partesResto = resto.split(/[\-\–\:]\s*/);
       if (partesResto.length > 1) {
         return {
-          dia: diaNum || i + 1,
+          dia,
+          etiqueta,
           titulo: partesResto[0].trim(),
           descripcion: partesResto.slice(1).join(' - ').trim()
         };
       }
-      return { dia: diaNum || i + 1, titulo: resto, descripcion: '' };
+      return {
+        dia,
+        etiqueta,
+        titulo: resto,
+        descripcion: ''
+      };
     }
 
-    return { dia: i + 1, titulo: linea, descripcion: '' };
+    const { dia, etiqueta } = formatLabelAndDay(null, i);
+    return {
+      dia,
+      etiqueta,
+      titulo: linea,
+      descripcion: ''
+    };
   });
 }
 
 function mapDestino(row, index) {
   const imagenesOriginales = collectImages(row);
   const imagenes = imagenesOriginales.length
-    ? imagenesOriginales.map(url => resizedImage(url, 1200, 800))
+    ? imagenesOriginales.map(url => resizedImage(url, 1600))
     : ['/destinations_grid.jpg'];
 
   const parsedId = row.id != null && String(row.id).trim() !== '' ? String(row.id).trim() : index + 1;
