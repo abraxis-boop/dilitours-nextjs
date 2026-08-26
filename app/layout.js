@@ -23,6 +23,13 @@ export const metadata = {
     template: `%s | ${agency.name}`,
   },
   description: agency.description,
+  icons: {
+    icon: [
+      { url: '/logo.png', type: 'image/png' },
+    ],
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
   keywords: [
     'agencia de viajes',
     'viajes Tepic',
