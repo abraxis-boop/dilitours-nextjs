@@ -48,7 +48,7 @@ function esVerdadero(valor) {
   if (typeof valor === 'boolean') return valor;
   if (!valor) return false;
   const v = String(valor).toLowerCase().trim();
-  return v === 'true' || v === 'si' || v === 'sí' || v === '1' || v === 'x';
+  return v === 'true' || v === 'si' || v === 'sí' || v === '1' || v === 'x' || v === 'y' || v === 'yes';
 }
 
 function parseNumero(valor, porDefecto) {
@@ -126,7 +126,7 @@ function mapDestino(row, index) {
     ? imagenesOriginales.map(url => resizedImage(url, 1200, 800))
     : ['/destinations_grid.jpg'];
 
-  const parsedId = parseNumero(row.id, index + 1);
+  const parsedId = row.id != null && String(row.id).trim() !== '' ? String(row.id).trim() : index + 1;
   const rawIncluye = 
     row.incluye ?? row.Incluye ?? row.INCLUYE ?? row.incluidos ?? row.Incluidos ??
     row.servicios ?? row.que_incluye ?? row.incluido ?? row['¿Qué incluye?'] ?? row['Que incluye'] ?? row['incluye'];

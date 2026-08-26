@@ -21,7 +21,7 @@ export default function DetalleDestinoPage() {
   const params = useParams();
   const { destinos, loading, error } = useDestinos();
   const id = params.id;
-  const destino = destinos.find(d => d.id === parseInt(id));
+  const destino = destinos.find(d => String(d.id) === String(id));
   const [activeImg, setActiveImg] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImgIdx, setModalImgIdx] = useState(0);
