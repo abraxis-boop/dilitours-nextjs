@@ -22,22 +22,42 @@ const stats = [
 
 const ventajas = [
   {
-    icon: '🛡️',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="28" height="28">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+    ),
     titulo: 'Viaje Seguro',
     desc: 'Incluimos seguro de viaje en todos nuestros paquetes para que viajes sin preocupaciones.'
   },
   {
-    icon: '💎',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="28" height="28">
+        <path d="M6 3h12l4 6-10 12L2 9z" />
+        <path d="M11 3v18" />
+        <path d="M2 9h20" />
+      </svg>
+    ),
     titulo: 'Mejor Precio',
     desc: 'Garantizamos el mejor precio del mercado. Si encuentras uno más bajo, lo igualamos.'
   },
   {
-    icon: '🌍',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="28" height="28">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M2 12h20" />
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+      </svg>
+    ),
     titulo: 'Expertos Locales',
     desc: 'Nuestros guías son expertos locales que conocen cada destino a la perfección.'
   },
   {
-    icon: '📞',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="28" height="28">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+      </svg>
+    ),
     titulo: 'Soporte 24/7',
     desc: 'Estamos contigo durante todo tu viaje. Disponibles las 24 horas, los 7 días.'
   }

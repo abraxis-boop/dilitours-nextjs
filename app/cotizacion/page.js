@@ -35,7 +35,7 @@ export default function CotizacionPage() {
     const comentarios = form.comentarios || 'Ninguno';
 
     const lineas = [
-      '✈️ SOLICITUD DE COTIZACIÓN',
+      'SOLICITUD DE COTIZACIÓN',
       '',
       `Destino: ${destinoText}`,
       `Fechas: ${salida} al ${regreso}`,
@@ -63,7 +63,11 @@ export default function CotizacionPage() {
           <section className="section" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center' }}>
             <div className="container" style={{ textAlign: 'center' }}>
               <div className="cotizacion-success">
-                <span style={{ fontSize: '48px' }}>✓</span>
+                <span style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(0,180,136,0.15)', color: '#00b488', margin: '0 auto 16px' }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" width="32" height="32">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </span>
                 <h2>¡Solicitud enviada con éxito!</h2>
                 <p>Gracias, <strong>{form.nombre}</strong>. Hemos recibido tu solicitud de cotización para <strong>{form.destino || 'tu destino seleccionado'}</strong>.</p>
                 <p style={{ marginTop: '8px' }}>Te enviaremos tu cotización por WhatsApp en menos de 24 horas.</p>
@@ -124,7 +128,7 @@ export default function CotizacionPage() {
                           {loadingDestinos ? 'Cargando destinos...' : '— Seleccionar destino —'}
                         </option>
                         {destinos
-                          .filter(d => form.categoria === 'todos' || d.categoria === form.categoria)
+                          .filter(d => form.categoria === 'todos' || (Array.isArray(d.categorias) ? d.categorias.includes(form.categoria) : d.categorias === form.categoria))
                           .map(d => <option key={d.id} value={d.nombre}>{d.nombre} — desde ${d.precio} {d.moneda}</option>)}
                       </select>
                     </div>

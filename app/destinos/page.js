@@ -20,7 +20,7 @@ function DestinosContent() {
 
   const filtrados = useMemo(() => {
     let res = [...destinos];
-    if (catActiva !== 'todos') res = res.filter(d => d.categoria === catActiva);
+    if (catActiva !== 'todos') res = res.filter(d => Array.isArray(d.categorias) ? d.categorias.includes(catActiva) : d.categorias === catActiva);
     if (busqueda.trim()) {
       const q = busqueda.toLowerCase();
       res = res.filter(d =>

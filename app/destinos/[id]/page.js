@@ -81,7 +81,7 @@ export default function DetalleDestinoPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const lineas = [
-      `🌍 RESERVA DE PAQUETE`,
+      `RESERVA DE PAQUETE`,
       '',
       `Paquete: ${destino.nombre}`,
       `Duración: ${destino.duracion}`,
@@ -114,21 +114,44 @@ export default function DetalleDestinoPage() {
               <Link href="/destinos">Destinos</Link><span>›</span>
               <span style={{ color: 'white' }}>{destino.nombre}</span>
             </nav>
-            <span className={`badge-category badge-${destino.categoria} animate-fade-up-delay-1`} style={{marginBottom: '12px', display: 'inline-block'}}>
-              {categoryLabels[destino.categoria] || destino.categoria}
-            </span>
+            {(destino.categorias || [destino.categoria]).map((cat) => (
+              <span key={cat} className={`badge-category badge-${cat} animate-fade-up-delay-1`} style={{marginBottom: '8px', marginRight: '6px', display: 'inline-block'}}>
+                {categoryLabels[cat] || cat}
+              </span>
+            ))}
             <h1 className="animate-fade-up-delay-2">{destino.nombre}</h1>
             <div className="detalle-hero__meta animate-fade-up-delay-3">
-              <span>📍 {destino.pais}</span>
-              <span>🕒 {destino.duracion}</span>
-              <span>⭐ {destino.rating} / 5.0</span>
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }}>
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                {destino.pais}
+              </span>
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }}>
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                {destino.duracion}
+              </span>
+              <span>
+                <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px', color: '#ffb400' }}>
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+                {destino.rating} / 5.0
+              </span>
             </div>
             <button
               onClick={(e) => { e.stopPropagation(); openModal(activeImg); }}
               className="btn btn-outline btn-sm animate-fade-up-delay-3"
               style={{ marginTop: '16px', background: 'rgba(0,0,0,0.4)', borderColor: 'rgba(255,255,255,0.6)', color: 'white' }}
             >
-              📷 Ampliar imágenes ({imagenes.length})
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }}>
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+              Ampliar imágenes ({imagenes.length})
             </button>
           </div>
         </div>
@@ -162,7 +185,14 @@ export default function DetalleDestinoPage() {
                   <h2>¿Qué incluye?</h2>
                   <ul className="detalle-incluye">
                     {destino.incluye.map((item, i) => (
-                      <li key={i}><span className="detalle-incluye__check">✓</span>{item}</li>
+                      <li key={i}>
+                        <span className="detalle-incluye__check">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" width="12" height="12">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        </span>
+                        {item}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -198,9 +228,29 @@ export default function DetalleDestinoPage() {
                     {destino.destacado && <span className="detalle-price-card__badge">Destacado</span>}
                   </div>
                   <div className="detalle-price-card__info">
-                    <div><span>🕒</span> Duración: <strong>{destino.duracion}</strong></div>
-                    <div><span>📍</span> Destino: <strong>{destino.pais}</strong></div>
-                    <div><span>✨</span> Incluye: <strong>{destino.incluye.length} servicios</strong></div>
+                    <div>
+                      <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+                          <circle cx="12" cy="12" r="10" />
+                          <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                      </span> Duración: <strong>{destino.duracion}</strong>
+                    </div>
+                    <div>
+                      <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                          <circle cx="12" cy="10" r="3" />
+                        </svg>
+                      </span> Destino: <strong>{destino.pais}</strong>
+                    </div>
+                    <div>
+                      <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </span> Incluye: <strong>{destino.incluye.length} servicios</strong>
+                    </div>
                   </div>
                 </div>
 
@@ -209,7 +259,11 @@ export default function DetalleDestinoPage() {
                   <p>Completa tus datos y te contactamos en menos de 24 horas.</p>
                   {enviado ? (
                     <div className="detalle-form-success">
-                      <span>✓</span>
+                      <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" width="24" height="24">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </span>
                       <h4>¡Solicitud enviada!</h4>
                       <p>Te contactaremos pronto por WhatsApp.</p>
                     </div>

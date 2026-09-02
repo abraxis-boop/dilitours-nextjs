@@ -114,7 +114,11 @@ function QuoteModal({ auto, onClose }) {
         <div className="modal-body">
           {enviado ? (
             <div style={{ textAlign: 'center', padding: '32px 0' }}>
-              <span style={{ fontSize: '56px', display: 'block', marginBottom: '16px' }}>✓</span>
+              <span style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(0,180,136,0.15)', color: '#00b488', margin: '0 auto 16px' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" width="32" height="32">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </span>
               <h4 style={{ fontSize: '20px', color: 'var(--dark)', marginBottom: '8px' }}>¡Solicitud enviada!</h4>
               <p style={{ color: 'var(--gray-600)' }}>
                 Te enviaremos tu cotización por WhatsApp en menos de 2 horas.

@@ -80,16 +80,26 @@ function collectImages(row, maxImages = 10) {
   return urls;
 }
 
-function normalizarCategoria(catRaw = '') {
-  const slug = catRaw
-    .toString()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .trim()
-    .replace(/\s+/g, '-');
+function normalizarCategorias(catRaw = '') {
   const validas = ['nacional', 'internacional', 'local', 'luna-de-miel', 'familiar', 'negocios', 'aventura', 'crucero'];
-  return validas.includes(slug) ? slug : slug || 'internacional';
+
+  // Support arrays already
+  const partes = Array.isArray(catRaw)
+    ? catRaw
+    : String(catRaw).split(/[,;|]+/);
+
+  const slugs = partes
+    .map(p =>
+      p.toString()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+    )
+    .filter(slug => validas.includes(slug));
+
+  return slugs.length > 0 ? slugs : ['internacional'];
 }
 
 function esVerdadero(valor) {
@@ -297,7 +307,7 @@ function mapDestino(row, index) {
     id: parsedId,
     nombre: row.nombre || 'Destino',
     pais: row.pais || '',
-    categoria: normalizarCategoria(row.categoria),
+    categorias: normalizarCategorias(row.categorias ?? row.categoria),
     imagen: imagenes[0],
     imagenes,
     precio: parseNumero(row.precio, 0),
@@ -323,7 +333,7 @@ export function useDestinos(refreshKey = 0) {
     setLoading(true);
     setError(null);
 
-    fetchTable('Catalogo_tours')
+    fetchTable('Catalogo_tours', { forceRefresh: refreshKey > 0 })
       .then((rows) => {
         if (!activo) return;
         setDestinos(rows.map(mapDestino).filter(d => d.activo));

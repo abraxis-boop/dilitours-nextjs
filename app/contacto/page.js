@@ -108,7 +108,11 @@ export default function ContactoPage() {
                 <p>Te respondemos en menos de 24 horas.</p>
                 {enviado ? (
                   <div className="contacto-success">
-                    <span style={{ fontSize: '48px' }}>✓</span>
+                    <span style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(0,180,136,0.15)', color: '#00b488', margin: '0 auto 16px' }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" width="32" height="32">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </span>
                     <h4>¡Mensaje enviado!</h4>
                     <p>Te responderemos pronto por WhatsApp.</p>
                   </div>

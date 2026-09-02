@@ -39,17 +39,42 @@ export default function DestinationCard({ destino }) {
           height={300}
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
-        <span className={`badge-category badge-${destino.categoria} dest-card__badge`}>
-          {categoryLabels[destino.categoria] || destino.categoria}
-        </span>
+        <div className="dest-card__badges">
+          {(destino.categorias || [destino.categoria]).map((cat) => (
+            <span key={cat} className={`badge-category badge-${cat} dest-card__badge`}>
+              {categoryLabels[cat] || cat}
+            </span>
+          ))}
+        </div>
         {destino.destacado && (
-          <span className="dest-card__featured">Destacado</span>
+          <span className="dest-card__featured">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12" style={{ color: '#ffb400' }}>
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+            Destacado
+          </span>
         )}
       </div>
       <div className="dest-card__body">
         <div className="dest-card__meta">
-          {destino.pais && <span>📍 {destino.pais}</span>}
-          {destino.duracion && <span>🕒 {destino.duracion}</span>}
+          {destino.pais && (
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }}>
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              {destino.pais}
+            </span>
+          )}
+          {destino.duracion && (
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }}>
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              {destino.duracion}
+            </span>
+          )}
         </div>
         <h3 className="dest-card__name">{destino.nombre}</h3>
         <p className="dest-card__desc">{destino.descripcion}</p>
@@ -57,7 +82,12 @@ export default function DestinationCard({ destino }) {
         {destino.incluye && destino.incluye.length > 0 && (
           <div className="dest-card__chips">
             {destino.incluye.slice(0, 3).map((item, idx) => (
-              <span key={idx} className="dest-card__chip">✓ {item}</span>
+              <span key={idx} className="dest-card__chip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="12" height="12" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }}>
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                {item}
+              </span>
             ))}
             {destino.incluye.length > 3 && (
               <span className="dest-card__chip dest-card__chip--more">+{destino.incluye.length - 3} más</span>
